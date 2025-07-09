@@ -1,4 +1,4 @@
-PROTO_TAG ?= v0.0.3
+PROTO_TAG ?= v0.0.4
 PROTO_NAME := user.proto
 PROTO_PATH := github.com/esclient/protos
 PROTO_MODULE := $(shell go list -m)

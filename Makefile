@@ -1,10 +1,10 @@
-PROTO_TAG ?= v0.0.2
+PROTO_TAG ?= v0.0.3
 PROTO_NAME := user.proto
 PROTO_PATH := github.com/esclient/protos
 PROTO_MODULE := $(shell go list -m)
 
 TMP_DIR := .proto
-OUT_DIR := src/userservice/grpc
+OUT_DIR := api/userservice
 
 .PHONY: clean fetch-proto gen-stubs update
 

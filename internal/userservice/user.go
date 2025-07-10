@@ -1,10 +1,10 @@
 package userservice
 
 type User struct {
-	ID          int64
-	Login       string
-	Email       string
-	Password    string
+	ID                int64
+	Login             string
+	Email             string
+	HashedPassword    string
 }
 
 type UserRepository interface {

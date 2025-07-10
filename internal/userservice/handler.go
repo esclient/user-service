@@ -17,3 +17,7 @@ func NewUserHandler(service *UserService) *UserHandler {
 func (u *UserHandler) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (*pb.LoginUserResponse, error) {
 	return nil, nil
 }
+
+func (u *UserHandler) RegisterUser(ctx context.Context, req *pb.RegisterUserRequest) (*pb.RegisterUserResponse, error) {
+	return nil, nil
+}

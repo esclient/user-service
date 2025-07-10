@@ -12,7 +12,11 @@ func NewPostgresUserRepository(db *sql.DB) *PostgresUserRepository {
 	return &PostgresUserRepository{db: db}
 }
 
-func (r *PostgresUserRepository) GetByLoginOrEmail(loginOrEmail string) (*User, error) {
+func (r *PostgresUserRepository) GetByLogin(login string) (*User, error) {
+	return nil, nil
+}
+
+func (r *PostgresUserRepository) GetByEmail(email string) (*User, error) {
 	return nil, nil
 }
 

@@ -8,6 +8,7 @@ type User struct {
 }
 
 type UserRepository interface {
-	GetByLoginOrEmail(LoginOrEmail string) (*User, error)
+	GetByLogin(login string) (*User, error)
+	GetByEmail(email string) (*User, error)
 	Register(user *User) (int64, error)
 }

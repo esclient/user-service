@@ -1,8 +1,9 @@
-package userservice
+package repository
 
 import (
 	"context"
 	"errors"
+	"os/user"
 
 	pgx "github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -36,11 +37,11 @@ func NewPostgresUserRepository(db *pgx.Conn) *PostgresUserRepository {
 	return &PostgresUserRepository{db: db}
 }
 
-func (r *PostgresUserRepository) GetByLogin(login string) (*User, error) {
+func (r *PostgresUserRepository) GetByLogin(login string) (*user.User, error) {
 	return nil, nil
 }
 
-func (r *PostgresUserRepository) GetByEmail(email string) (*User, error) {
+func (r *PostgresUserRepository) GetByEmail(email string) (*user.User, error) {
 	return nil, nil
 }
 
@@ -49,7 +50,7 @@ func (r *PostgresUserRepository) Register(ctx context.Context, login string, ema
 
 	err := r.db.QueryRow(ctx, RegisterUserQuery, login, email, hashedPassword).Scan(&userID)
 	if err != nil {
-		var pgxErr * pgconn.PgError
+		var pgxErr *pgconn.PgError
 		if errors.As(err, &pgxErr) {
 			switch pgxErr.ConstraintName {
 				case "users_login_idx":

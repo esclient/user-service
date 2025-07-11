@@ -1,20 +1,24 @@
-package userservice
+package service
 
 import (
+	"os/user"
+
 	crp "golang.org/x/crypto/bcrypt"
+
+	"github.com/esclient/user-service/internal/userservice/repository"
 )
 
 const HashCost int = 14
 
 type UserService struct {
-	rep UserRepository
+	rep repository.PostgresUserRepository
 }
 
-func NewUserService(rep UserRepository) *UserService {
+func NewUserService(rep repository.PostgresUserRepository) *UserService {
 	return &UserService{rep: rep}
 }
 
-func (s *UserService) Login(loginOrEmail string, password string) (*User, error) {
+func (s *UserService) Login(loginOrEmail string, password string) (*user.User, error) {
 	return nil, nil
 }
 

@@ -1,19 +1,21 @@
-package userservice
+package handler
 
 import (
 	"context"
 	"errors"
 
 	pb "github.com/esclient/user-service/api/userservice"
+
+	"github.com/esclient/user-service/internal/userservice/service"
 )
 
 var ErrorValidFields = errors.New("login, email, password or confirm password field is empty")
 
 type UserHandler struct {
-	service *UserService
+	service *service.UserService
 }
 
-func NewUserHandler(service *UserService) *UserHandler {
+func NewUserHandler(service *service.UserService) *UserHandler {
 	return &UserHandler{service: service}
 }
 

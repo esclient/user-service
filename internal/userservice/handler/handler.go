@@ -12,6 +12,8 @@ import (
 var ErrorValidFields = errors.New("login, email, password or confirm password field is empty")
 
 type UserHandler struct {
+	pb.UnimplementedUserServiceServer
+	
 	service *service.UserService
 }
 

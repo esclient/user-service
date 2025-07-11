@@ -10,11 +10,10 @@ import (
 
 	user_service "github.com/esclient/user-service/api/userservice"
 
-	//Для ветки main убрать ссылку на ветку (/tree/beta)
-	"github.com/esclient/user-service/tree/beta/internal/userservice/config"
-	"github.com/esclient/user-service/tree/beta/internal/userservice/handler"
-	"github.com/esclient/user-service/tree/beta/internal/userservice/repository"
-	"github.com/esclient/user-service/tree/beta/internal/userservice/service"
+	"github.com/esclient/user-service/internal/userservice/config"
+	"github.com/esclient/user-service/internal/userservice/handler"
+	repo "github.com/esclient/user-service/internal/userservice/repository"
+	"github.com/esclient/user-service/internal/userservice/service"
 )
 
 func main() {
@@ -22,13 +21,18 @@ func main() {
 
 	ctx := context.Background()
 
-	databaseConn := repository.NewDatabaseConnection(ctx, cfg.DatabaseURL)
-	repository := repository.NewPostgresUserRepository(databaseConn)
+	databaseConn, err := repo.NewDatabaseConnection(ctx, cfg.DatabaseURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	repository := repo.NewPostgresUserRepository(databaseConn)
 	
 	userService := service.NewUserService(repository)
 	userHandler := handler.NewUserHandler(userService)
 
 	grpcServer := grpc.NewServer()
+	reflection.Register(grpcServer)
 
 	user_service.RegisterUserServiceServer(grpcServer, userHandler)
 

@@ -11,10 +11,10 @@ import (
 const HashCost int = 14
 
 type UserService struct {
-	rep repository.PostgresUserRepository
+	rep *repository.PostgresUserRepository
 }
 
-func NewUserService(rep repository.PostgresUserRepository) *UserService {
+func NewUserService(rep *repository.PostgresUserRepository) *UserService {
 	return &UserService{rep: rep}
 }
 

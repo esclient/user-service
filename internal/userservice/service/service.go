@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"os/user"
 
 	crp "golang.org/x/crypto/bcrypt"
@@ -22,13 +23,13 @@ func (s *UserService) Login(loginOrEmail string, password string) (*user.User, e
 	return nil, nil
 }
 
-func (s *UserService) Register(login string, email string, password string) (int64, error) {
+func (s *UserService) Register(ctx context.Context, login string, email string, password string) (int64, error) {
 	hashedPassword, err := crp.GenerateFromPassword([]byte(password), HashCost)
 	if err != nil {
 		return -1, err
 	}
 
-	userID, err := s.Register(login, email, string(hashedPassword))
+	userID, err := s.rep.Register(ctx, login, email, string(hashedPassword))
 	if err != nil {
 		return -1, err
 	}

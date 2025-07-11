@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"os/user"
+	"time"
 
 	pgx "github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -15,10 +16,12 @@ var (
 )
 
 const RegisterUserQuery string = `
-	INSERT INTO users (login, email, hashedPassword)
+	INSERT INTO users (login, email, password)
 	VALUES ($1, $2, $3)
 	RETURNING id
 	`
+
+const DBTimeout = 5 * time.Second
 
 type PostgresUserRepository struct {
 	db *pgx.Conn
@@ -47,6 +50,9 @@ func (r *PostgresUserRepository) GetByEmail(email string) (*user.User, error) {
 
 func (r *PostgresUserRepository) Register(ctx context.Context, login string, email string, hashedPassword string) (int64, error) {
 	var userID int64
+
+	ctx, cancel := context.WithTimeout(ctx, DBTimeout)
+	defer cancel()
 
 	err := r.db.QueryRow(ctx, RegisterUserQuery, login, email, hashedPassword).Scan(&userID)
 	if err != nil {

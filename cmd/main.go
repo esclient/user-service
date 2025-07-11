@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 
@@ -32,11 +33,13 @@ func main() {
 	userHandler := handler.NewUserHandler(userService)
 
 	grpcServer := grpc.NewServer()
-	reflection.Register(grpcServer)
 
 	user_service.RegisterUserServiceServer(grpcServer, userHandler)
 
-	listener, err := net.Listen("tcp", cfg.Port)
+	reflection.Register(grpcServer)
+
+	address := fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
+	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

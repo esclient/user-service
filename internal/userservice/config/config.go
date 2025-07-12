@@ -1,4 +1,4 @@
-package userservice
+package config
 
 import (
 	"log"
@@ -12,7 +12,7 @@ type Config struct {
 	Host string `mapstructure:"HOST"`
 	Port string `mapstructure:"PORT"`
 
-	DataBaseURL string `mapstructure:"DB_URL"`
+	DatabaseURL string `mapstructure:"DB_URL"`
 }
 
 func LoadConfig() *Config {
@@ -40,6 +40,6 @@ func LoadConfig() *Config {
 	return &Config{
 		Host:        host,
 		Port:        port,
-		DataBaseURL: dataBaseUrl,
+		DatabaseURL: dataBaseUrl,
 	}
 }

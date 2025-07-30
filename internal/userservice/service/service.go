@@ -49,7 +49,7 @@ func (s *UserService) Register(ctx context.Context, login string, email string, 
 	return userID, nil
 
 func generateVerificationCode() (string, error) {
-	max := big.NewInt(1000000)
+    max := big.NewInt(1000000)
     n, err := rand.Int(rand.Reader, max)
     if err != nil {
         return "", err

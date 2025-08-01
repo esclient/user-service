@@ -34,8 +34,6 @@ const (
 	`
 )
 
-const DBTimeout = 5 * time.Second
-
 type PostgresUserRepository struct {
 	db *pgx.Conn
 }

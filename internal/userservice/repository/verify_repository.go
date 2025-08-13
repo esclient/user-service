@@ -5,21 +5,17 @@ import (
 	"errors"
 	"log"
 	"time"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type DBCodeData struct {
 	Code string
-	CreatedAt string
+	CreatedAt time.Time
 }
 
-var (
-	ErrorRowsDoesNotExist = errors.New("db row does not exist")
-	ErrorCodeExpired = errors.New("code from db expired")
-	ErrorCodeMismatch = errors.New("code mismatch")
-)
-
 const (
-	VerificationCodeLiftime = time.Minute * 5
+	VerificationCodeLifetime = time.Minute * 5
 )
 
 const (
@@ -28,7 +24,7 @@ const (
 	FROM email_verifications
 	WHERE user_id = $1
 	ORDER BY created_at DESC
-	LIMIT 2;
+	LIMIT 1;
 	`
 )
 
@@ -36,18 +32,12 @@ func (r *PostgresUserRepository) VerifyUser(ctx context.Context, userID int64, c
 	ctx, cancel := context.WithTimeout(ctx, DBTimeout)
 	defer cancel()
 
-	rows, err := r.db.Query(ctx, GetCodeFromDBQuery, userID)
-	if err != nil {
-		return false, err
-	}
+	dbCodeData, err := r.getCodeFromDB(ctx, userID)
+    if err != nil {
+        return false, err
+    }
 
-	var DBCodeData DBCodeData
-	if !rows.Next() {
-		return  false, ErrorRowsDoesNotExist
-	}
-	rows.Scan(&DBCodeData.Code, &DBCodeData.CreatedAt)
-
-	codeValidation, err := validateCodeRepositoryLayer(code, DBCodeData)
+	codeValidation, err := validateCodeRepositoryLayer(code, dbCodeData)
 	if err != nil {
 		return codeValidation, err
 	}
@@ -65,25 +55,34 @@ func (r *PostgresUserRepository) VerifyUser(ctx context.Context, userID int64, c
 	return true, nil
 }
 
-func validateCodeRepositoryLayer(code string, codeData DBCodeData) (bool, error) {
-	if expiredCodeErr := isCodeExpired(codeData.CreatedAt); expiredCodeErr != nil {
-		return false, expiredCodeErr
-	}
+func (r *PostgresUserRepository) getCodeFromDB(ctx context.Context, userID int64) (DBCodeData, error) {
+    var data DBCodeData
+    
+    err := r.db.QueryRow(ctx, GetCodeFromDBQuery, userID).Scan(&data.Code, &data.CreatedAt)
+    if err != nil {
+        if errors.Is(err, pgx.ErrNoRows) {
+            return DBCodeData{}, ErrorRowDoesNotExist
+        }
+        return DBCodeData{}, ErrorQueryFailed
+    }
+    
+    return data, nil
+}
 
+func validateCodeRepositoryLayer(code string, codeData DBCodeData) (bool, error) {
 	if codeMismatchErr := isCodeMismatch(codeData.Code, code); codeMismatchErr != nil {
 		return false, codeMismatchErr
+	}
+
+	if expiredCodeErr := isCodeExpired(codeData.CreatedAt); expiredCodeErr != nil {
+		return false, expiredCodeErr
 	}
 
 	return true, nil
 }
 
-func isCodeExpired(createdAtAsString string) error {
-	codeCreatedTime, formatTimeErr := time.Parse(TimeStampFormat, createdAtAsString)
-	if formatTimeErr != nil {
-		return formatTimeErr
-	}
-
-	if time.Since(codeCreatedTime) > VerificationCodeLiftime {
+func isCodeExpired(createdAt time.Time) error {
+	if time.Since(createdAt) > VerificationCodeLifetime {
 		return ErrorCodeExpired
 	}
 	return nil

@@ -2,6 +2,9 @@ package repository
 
 import (
 	"context"
+	"errors"
+
+	"github.com/jackc/pgx/v5"
 )
 
 const (
@@ -17,8 +20,11 @@ func (r *PostgresUserRepository) UpdateUserStatus(ctx context.Context, userID in
 	defer cancel()
 
 	_, err := r.db.Exec(ctx, UpdateUserStatusQuery, userID, status)
-
-	//TODO: Возможно стоит сделать проверку на существование пользователя
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+            return ErrorUserNotFound
+        }
+	}
 	
 	return err
 }

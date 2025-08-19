@@ -10,11 +10,6 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-var (
-	ErrorLoginTaken = errors.New("login already taken")
-	ErrorEmailTaken = errors.New("email already taken")
-)
-
 const (
 	RegisterUserQuery = `
 	INSERT INTO users (login, email, password)
@@ -33,8 +28,6 @@ const (
 	UPDATE email_verifications SET code = $1 created_at = $2 WHERE user_id = $3
 	`
 )
-
-const DBTimeout = 5 * time.Second
 
 type PostgresUserRepository struct {
 	db *pgx.Conn
@@ -104,7 +97,7 @@ func (r *PostgresUserRepository) Register(ctx context.Context, login string, ema
 					return -1, ErrorEmailTaken
 			}
 		}
-		return  -1, err
+		return  -1, ErrorQueryFailed
 	}
 
 	err = r.WriteVerificationCode(ctx, userID, verificationCode)

@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"math/big"
 	"os/user"
-	"time"
 	"fmt"
 
 	crp "golang.org/x/crypto/bcrypt"
@@ -15,7 +14,6 @@ import (
 
 const (
 	HashCost = 14
-	VerificationCodeLiftime = time.Minute * 5
 ) 
 
 type UserService struct {
@@ -47,6 +45,7 @@ func (s *UserService) Register(ctx context.Context, login string, email string, 
 	}
 
 	return userID, nil
+}
 
 func generateVerificationCode() (string, error) {
     max := big.NewInt(1000000)

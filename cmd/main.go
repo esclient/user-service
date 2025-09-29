@@ -15,14 +15,24 @@ import (
 	"github.com/esclient/user-service/internal/userservice/handler"
 	repo "github.com/esclient/user-service/internal/userservice/repository"
 	"github.com/esclient/user-service/internal/userservice/service"
+
+	infisical "github.com/esclient/user-service/internal/infisical"
 )
 
 func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	cfg := config.LoadConfig()
 
-	ctx := context.Background()
+	infisicalClient := infisical.NewClient(infisical.InfisicalURL, cfg.InfisicalSecretKey)
 
-	databaseConn, err := repo.NewDatabaseConnection(ctx, cfg.DatabaseURL)
+	secretDBURL, err := infisicalClient.GetSecret(ctx, cfg.InfisicalProjectId, cfg.InfisicalEnv, infisical.SecretPathUserService, "DB_URL")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	databaseConn, err := repo.NewDatabaseConnection(ctx, secretDBURL.Value)
 	if err != nil {
 		log.Fatal(err)
 	}

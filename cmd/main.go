@@ -27,12 +27,12 @@ func main() {
 
 	infisicalClient := infisical.NewClient(infisical.InfisicalURL, cfg.InfisicalSecretKey)
 
-	secret, err := infisicalClient.GetSecret(ctx, cfg.InfisicalProjectId, cfg.InfisicalEnv, infisical.SecretPathUserService, "DB_URL")
+	secretDBURL, err := infisicalClient.GetSecret(ctx, cfg.InfisicalProjectId, cfg.InfisicalEnv, infisical.SecretPathUserService, "DB_URL")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	databaseConn, err := repo.NewDatabaseConnection(ctx, secret.Value)
+	databaseConn, err := repo.NewDatabaseConnection(ctx, secretDBURL.Value)
 	if err != nil {
 		log.Fatal(err)
 	}

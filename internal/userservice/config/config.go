@@ -12,7 +12,11 @@ type Config struct {
 	Host string `mapstructure:"HOST"`
 	Port string `mapstructure:"PORT"`
 
-	DatabaseURL string `mapstructure:"DB_URL"`
+	//DatabaseURL string `mapstructure:"DB_URL"`
+
+	InfisicalSecretKey string `mapstructure:"INFISICAL_SECRET_KEY"`
+	InfisicalProjectId string `mapstructure:"INFISICAL_PROJECT_ID"`
+	InfisicalEnv string `mapstructure:"INFISICAL_ENV"`
 }
 
 func LoadConfig() *Config {
@@ -29,17 +33,29 @@ func LoadConfig() *Config {
 		log.Fatalf("viper.BindEnv PORT error: %v", err)
 	}
 
-	if err := viper.BindEnv("DB_URL"); err != nil {
-		log.Fatalf("viper.BindEnv DB_URL error: %v", err)
+	if err := viper.BindEnv("INFISICAL_SECRET_KEY"); err != nil {
+		log.Fatalf("viper.BindEnv INFISICAL_SECRET_KEY error: %v", err)
+	}
+
+	if err := viper.BindEnv("INFISICAL_PROJECT_ID"); err != nil {
+		log.Fatalf("viper.BindEnv INFISICAL_PROJECT_ID error: %v", err)
+	}
+
+	if err := viper.BindEnv("INFISICAL_ENV"); err != nil {
+		log.Fatalf("viper.BindEnv INFISICAL_ENV error: %v", err)
 	}
 
 	host := viper.GetString("HOST")
 	port := viper.GetString("PORT")
-	dataBaseUrl := viper.GetString("DB_URL")
+	infisicalSecretKey := viper.GetString("INFISICAL_SECRET_KEY")
+	infisicalProjectId := viper.GetString("INFISICAL_PROJECT_ID")
+	infisicalEnv := viper.GetString("INFISICAL_ENV")
 
 	return &Config{
-		Host:        host,
-		Port:        port,
-		DatabaseURL: dataBaseUrl,
+		Host:                   host,
+		Port:                   port,
+		InfisicalSecretKey:     infisicalSecretKey,
+		InfisicalProjectId: 	infisicalProjectId,
+		InfisicalEnv: 	        infisicalEnv,
 	}
 }

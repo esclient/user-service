@@ -6,7 +6,10 @@ PROTO_MODULE := $(shell go list -m)
 TMP_DIR := .proto
 OUT_DIR := api/userservice
 
-.PHONY: clean fetch-proto gen-stubs update
+ENV_FILE := .env
+DOCKER_PORT := 50125
+
+.PHONY: clean fetch-proto gen-stubs update run stop rebuild logs
 
 ifeq ($(OS),Windows_NT)
 MKDIR    = powershell -Command "New-Item -ItemType Directory -Force -Path"
@@ -19,6 +22,7 @@ RM       = rm -rf $(TMP_DIR)
 DOWN     = wget
 DOWN_OUT = -O
 endif
+
 
 clean:
 	$(RM)
@@ -38,3 +42,28 @@ gen-stubs: fetch-proto
 		"$(TMP_DIR)/$(PROTO_NAME)"
 
 update: gen-stubs clean
+
+
+# --- Docker commands ---
+run: build
+	docker run -d \
+		--name user-service \
+		--env-file $(ENV_FILE) \
+		-p ${DOCKER_PORT}:${DOCKER_PORT} \
+		--restart unless-stopped \
+		user-service
+	docker logs -f user-service
+
+build:
+	docker build -t user-service .
+
+stop:
+	-docker stop user-service
+	-docker rm user-service
+
+rebuild: stop
+	docker build -t user-service .
+	$(MAKE) run
+
+logs:
+	docker logs -f user-service

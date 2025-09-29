@@ -12,8 +12,6 @@ type Config struct {
 	Host string `mapstructure:"HOST"`
 	Port string `mapstructure:"PORT"`
 
-	//DatabaseURL string `mapstructure:"DB_URL"`
-
 	InfisicalSecretKey string `mapstructure:"INFISICAL_SECRET_KEY"`
 	InfisicalProjectId string `mapstructure:"INFISICAL_PROJECT_ID"`
 	InfisicalEnv string `mapstructure:"INFISICAL_ENV"`

@@ -2,7 +2,6 @@ package infisical
 
 import (
 	"context"
-	"strings"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -21,7 +20,7 @@ type RetrievedSecret struct {
 
 type Client struct {
 	BaseURL   string
-	AuthToken string // service token (до последней точки, не забыть бы)
+	AuthToken string
 	http      *http.Client
 }
 
@@ -31,15 +30,6 @@ func NewClient(baseURL string, authToken string) *Client {
 		AuthToken: authToken,
 		http:      &http.Client{},
 	}
-}
-
-func ExtractAccessToken(fullToken string) string {
-    parts := strings.Split(fullToken, ".")
-    if len(parts) < 2 {
-        return fullToken
-    }
-    
-    return strings.Join(parts[:2], ".")
 }
 
 func (c *Client) GetSecretsV4(ctx context.Context, projectId string, environment string, secretsPath string) ([]RetrievedSecret, error) {

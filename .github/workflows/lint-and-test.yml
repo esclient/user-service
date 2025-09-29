@@ -1,0 +1,19 @@
+name: "lint and test"
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lint-and-test:
+    uses: esclient/tools/.github/workflows/lint-and-test-go.yml@main
+    with:
+      go-version: '1.24.4'
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

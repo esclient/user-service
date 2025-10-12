@@ -29,9 +29,6 @@ const (
 )
 
 func (r *PostgresUserRepository) VerifyUser(ctx context.Context, userID int64, code string) (bool, error) {
-	ctx, cancel := context.WithTimeout(ctx, DBTimeout)
-	defer cancel()
-
 	dbCodeData, err := r.getCodeFromDB(ctx, userID)
     if err != nil {
         return false, err

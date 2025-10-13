@@ -58,22 +58,31 @@ func NewDatabaseConnection(ctx context.Context, databaseURL string) (*pgxpool.Po
 		return nil, err
 	}
 
-	config.MaxConns = MaxPoolConns
-    config.MinConns = MinPoolConns
-    config.MaxConnLifetime = MaxConnLifetime
-    config.MaxConnIdleTime = MaxConnIdleTime
+    applyPoolTunables(config)
 
-	db, err := pgxpool.NewWithConfig(ctx, config)
+    db, err := newPoolWithConfig(ctx, config)
     if err != nil {
         return nil, err
     }
 
-	if err := db.Ping(ctx); err != nil {
+    if err := pingPool(ctx, db); err != nil {
         return nil, err
     }
 
-	return db, nil
+    return db, nil
 }
+
+// applyPoolTunables centralizes connection pool settings for easier unit testing
+func applyPoolTunables(config *pgxpool.Config) {
+    config.MaxConns = MaxPoolConns
+    config.MinConns = MinPoolConns
+    config.MaxConnLifetime = MaxConnLifetime
+    config.MaxConnIdleTime = MaxConnIdleTime
+}
+
+// Indirections for testability (overridden in tests)
+var newPoolWithConfig = pgxpool.NewWithConfig
+var pingPool = func(ctx context.Context, db *pgxpool.Pool) error { return db.Ping(ctx) }
 
 // NewPostgresUserRepository accepts an abstract DB (useful for tests)
 func NewPostgresUserRepository(db DB) *PostgresUserRepository {

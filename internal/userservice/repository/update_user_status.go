@@ -16,9 +16,6 @@ const (
 )
 
 func (r *PostgresUserRepository) UpdateUserStatus(ctx context.Context, userID int64, status string) error {
-	ctx, cancel := context.WithTimeout(ctx, DBTimeout)
-	defer cancel()
-
 	_, err := r.db.Exec(ctx, UpdateUserStatusQuery, userID, status)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {

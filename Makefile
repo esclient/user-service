@@ -9,7 +9,7 @@ OUT_DIR := api/userservice
 ENV_FILE := .env
 DOCKER_PORT := 50125
 
-.PHONY: clean fetch-proto gen-stubs update run stop rebuild logs
+.PHONY: clean fetch-proto gen-stubs update run stop rebuild logs test-cover sonar sonar-docker
 
 ifeq ($(OS),Windows_NT)
 MKDIR    = powershell -Command "New-Item -ItemType Directory -Force -Path"
@@ -67,3 +67,17 @@ rebuild: stop
 
 logs:
 	docker logs -f user-service
+
+# --- Test/Coverage and Sonar ---
+test-cover:
+	go test ./... -coverprofile=coverage.out
+
+sonar: test-cover
+	sonar-scanner
+
+sonar-docker: test-cover
+	@if [ -z "$$SONAR_HOST_URL" ] || [ -z "$$SONAR_TOKEN" ]; then \
+		echo "Set SONAR_HOST_URL and SONAR_TOKEN environment variables"; \
+		exit 1; \
+	fi
+	docker run --rm -e SONAR_HOST_URL -e SONAR_TOKEN -v "$(shell pwd):/usr/src" sonarsource/sonar-scanner-cli

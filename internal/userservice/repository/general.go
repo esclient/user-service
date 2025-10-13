@@ -12,6 +12,11 @@ const (
 
 const (
 	DBTimeout = 5 * time.Second
+
+	MaxPoolConns = 10
+	MinPoolConns = 2
+	MaxConnLifetime = time.Hour
+	MaxConnIdleTime = 30 * time.Minute
 )
 
 var (

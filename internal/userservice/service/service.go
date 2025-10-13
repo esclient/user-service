@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"crypto/rand"
+	"fmt"
 	"math/big"
 	"os/user"
-	"fmt"
 
 	crp "golang.org/x/crypto/bcrypt"
 
@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	HashCost = 14
+	HashCost = 12
 ) 
 
 type UserService struct {
@@ -29,10 +29,14 @@ func (s *UserService) Login(loginOrEmail string, password string) (*user.User, e
 }
 
 func (s *UserService) Register(ctx context.Context, login string, email string, password string) (int64, error) {
+	// timeStart := time.Now()
+
 	hashedPassword, err := crp.GenerateFromPassword([]byte(password), HashCost)
 	if err != nil {
 		return -1, err
 	}
+
+	// fmt.Printf("Время генерации Хэша из пароля: %.3f\n", time.Since(timeStart).Seconds())
 
 	verificationCode, err := generateVerificationCode()
 	if err != nil {

@@ -1,13 +1,13 @@
 package repository
 
 import (
-	"context"
-	"errors"
-	"os/user"
-	"time"
+    "context"
+    "errors"
+    "os/user"
+    "time"
 
-	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/jackc/pgx/v5/pgxpool"
+    "github.com/jackc/pgx/v5/pgconn"
+    "github.com/jackc/pgx/v5/pgxpool"
 )
 
 const (
@@ -27,8 +27,29 @@ const (
 	`
 )
 
+// Row abstracts the Scan method used from pgx
+type Row interface {
+    Scan(dest ...any) error
+}
+
+// Tx abstracts the subset of pgx.Tx we need
+type Tx interface {
+    QueryRow(ctx context.Context, sql string, args ...any) Row
+    Exec(ctx context.Context, sql string, args ...any) (pgconn.CommandTag, error)
+    Commit(ctx context.Context) error
+    Rollback(ctx context.Context) error
+}
+
+// DB abstracts the subset of pgxpool.Pool we need
+type DB interface {
+    Begin(ctx context.Context) (Tx, error)
+    Exec(ctx context.Context, sql string, args ...any) (pgconn.CommandTag, error)
+    QueryRow(ctx context.Context, sql string, args ...any) Row
+    Ping(ctx context.Context) error
+}
+
 type PostgresUserRepository struct {
-	db *pgxpool.Pool
+    db DB
 }
 
 func NewDatabaseConnection(ctx context.Context, databaseURL string) (*pgxpool.Pool, error) {
@@ -54,8 +75,14 @@ func NewDatabaseConnection(ctx context.Context, databaseURL string) (*pgxpool.Po
 	return db, nil
 }
 
-func NewPostgresUserRepository(db *pgxpool.Pool) *PostgresUserRepository {
-	return &PostgresUserRepository{db: db}
+// NewPostgresUserRepository accepts an abstract DB (useful for tests)
+func NewPostgresUserRepository(db DB) *PostgresUserRepository {
+    return &PostgresUserRepository{db: db}
+}
+
+// NewPostgresUserRepositoryFromPool wraps a *pgxpool.Pool for production usage
+func NewPostgresUserRepositoryFromPool(pool *pgxpool.Pool) *PostgresUserRepository {
+    return &PostgresUserRepository{db: &pgxDB{pool: pool}}
 }
 
 func (r *PostgresUserRepository) GetByLogin(login string) (*user.User, error) {

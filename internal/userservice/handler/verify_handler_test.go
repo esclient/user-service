@@ -30,8 +30,9 @@ func TestIsCodeNotDigitable(t *testing.T) {
     if err := isCodeNotDigitable("12345!"); err == nil {
         t.Fatalf("expected not-digitable error with symbol, got nil")
     }
-    if err := isCodeNotDigitable("١٢٣٤٥٦"); err == nil { // Arabic-Indic digits are not ASCII digits
-        t.Fatalf("expected not-digitable error for non-ASCII digits, got nil")
+    // Arabic-Indic digits are valid according to unicode.IsDigit
+    if err := isCodeNotDigitable("١٢٣٤٥٦"); err != nil {
+        t.Fatalf("unexpected error for unicode digits: %v", err)
     }
     if err := isCodeNotDigitable("123456"); err != nil {
         t.Fatalf("unexpected error for numeric code: %v", err)

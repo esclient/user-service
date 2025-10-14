@@ -1,0 +1,3 @@
+DATABASE_URL: "{vault:user-service/prod#database_url}"
+HOST: "{vault:user-service/prod#host}"
+PORT: "{vault:user-service/prod#port}"

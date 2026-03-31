@@ -31,7 +31,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	repository := repo.NewPostgresUserRepository(databaseConn)
+	repository := repo.NewPostgresUserRepositoryFromPool(databaseConn)
 
 	userService := service.NewUserService(repository)
 	userHandler := handler.NewUserHandler(userService)

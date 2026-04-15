@@ -11,20 +11,20 @@ import (
 )
 
 var (
-	ErrorEmptyLogin = errors.New("login, field is empty")
-	ErrorEmptyEmail = errors.New("email, field is empty")
-	ErrorEmptyPassword = errors.New("password, field is empty")
-	ErrorEmptyConfirmPassword = errors.New("confirm password, field is empty")
+	ErrorEmptyLogin              = errors.New("login, field is empty")
+	ErrorEmptyEmail              = errors.New("email, field is empty")
+	ErrorEmptyPassword           = errors.New("password, field is empty")
+	ErrorEmptyConfirmPassword    = errors.New("confirm password, field is empty")
 	ErrorConfirmPasswordMismatch = errors.New("the password field and confirm password do not match")
 
-	ErrorCyrillicSymbolsLogin = errors.New("cyrillic symbols are not allowed in the login")
-	ErrorCyrillicSymbolsEmail = errors.New("cyrillic symbols are not allowed in the email")
+	ErrorCyrillicSymbolsLogin    = errors.New("cyrillic symbols are not allowed in the login")
+	ErrorCyrillicSymbolsEmail    = errors.New("cyrillic symbols are not allowed in the email")
 	ErrorCyrillicSymbolsPassword = errors.New("cyrillic symbols are not allowed in the password")
 )
 
 type UserHandler struct {
 	pb.UnimplementedUserServiceServer
-	
+
 	service *service.UserService
 }
 
@@ -48,7 +48,7 @@ func (u *UserHandler) RegisterUser(ctx context.Context, req *pb.RegisterUserRequ
 
 	userID, err := u.service.Register(ctx, login, email, password)
 	if err != nil {
-		return  nil, err
+		return nil, err
 	}
 
 	return &pb.RegisterUserResponse{UserId: userID}, nil
@@ -97,9 +97,9 @@ func isPasswordConfirmMatch(password string, confirmPassword string) bool {
 
 func hasCyrillic(str string) bool {
 	for _, r := range str {
-        if unicode.Is(unicode.Cyrillic, r) {
-            return true
-        }
-    }
-    return false
+		if unicode.Is(unicode.Cyrillic, r) {
+			return true
+		}
+	}
+	return false
 }

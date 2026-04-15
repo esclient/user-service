@@ -14,7 +14,7 @@ import (
 
 const (
 	HashCost = 12
-) 
+)
 
 type UserService struct {
 	rep *repository.PostgresUserRepository
@@ -52,11 +52,11 @@ func (s *UserService) Register(ctx context.Context, login string, email string, 
 }
 
 func generateVerificationCode() (string, error) {
-    max := big.NewInt(1000000)
-    n, err := rand.Int(rand.Reader, max)
-    if err != nil {
-        return "", err
-    }
+	max := big.NewInt(1000000)
+	n, err := rand.Int(rand.Reader, max)
+	if err != nil {
+		return "", err
+	}
 
-    return fmt.Sprintf("%06d", n.Int64()), nil 
+	return fmt.Sprintf("%06d", n.Int64()), nil
 }

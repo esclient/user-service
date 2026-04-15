@@ -19,9 +19,9 @@ func (r *PostgresUserRepository) UpdateUserStatus(ctx context.Context, userID in
 	_, err := r.db.Exec(ctx, UpdateUserStatusQuery, userID, status)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-            return ErrorUserNotFound
-        }
+			return ErrorUserNotFound
+		}
 	}
-	
+
 	return err
 }

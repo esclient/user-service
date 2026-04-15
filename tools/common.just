@@ -26,12 +26,12 @@ gen-stubs: fetch-proto
 update: gen-stubs clean
 
 format:
-    # placeholder
+    go fmt ./...
 
 lint:
-    # placeholder
+    go vet ./...
 
 test:
-    # placeholder
+    go test -covermode=atomic -coverprofile coverage.out ./...
 
 prepare: format lint test

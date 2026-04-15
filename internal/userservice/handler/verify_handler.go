@@ -11,9 +11,9 @@ import (
 const CodeLength = 6
 
 var (
-	ErrorCodeEmpty = errors.New("confirmation code is empty")
+	ErrorCodeEmpty          = errors.New("confirmation code is empty")
 	ErrorCodeLengthMismatch = errors.New("the code does not match the required length")
-	ErrorCodeNotDigitable = errors.New("the code is not digitable")
+	ErrorCodeNotDigitable   = errors.New("the code is not digitable")
 
 	ErrorCodeUserIDNegative = errors.New("user ID is negative")
 )
@@ -48,18 +48,18 @@ func validateConfirmationCode(code string) error {
 		return err
 	}
 
-	return nil	
+	return nil
 }
 
 func isCodeEmpty(code string) error {
-	if (code == "") {
+	if code == "" {
 		return ErrorCodeEmpty
 	}
 	return nil
 }
 
 func isCodeLengthMismatch(code string) error {
-	if (len(code) != CodeLength) {
+	if len(code) != CodeLength {
 		return ErrorCodeLengthMismatch
 	}
 	return nil

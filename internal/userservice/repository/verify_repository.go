@@ -10,7 +10,7 @@ import (
 )
 
 type DBCodeData struct {
-	Code string
+	Code      string
 	CreatedAt time.Time
 }
 
@@ -30,9 +30,9 @@ const (
 
 func (r *PostgresUserRepository) VerifyUser(ctx context.Context, userID int64, code string) (bool, error) {
 	dbCodeData, err := r.getCodeFromDB(ctx, userID)
-    if err != nil {
-        return false, err
-    }
+	if err != nil {
+		return false, err
+	}
 
 	codeValidation, err := validateCodeRepositoryLayer(code, dbCodeData)
 	if err != nil {
@@ -53,17 +53,17 @@ func (r *PostgresUserRepository) VerifyUser(ctx context.Context, userID int64, c
 }
 
 func (r *PostgresUserRepository) getCodeFromDB(ctx context.Context, userID int64) (DBCodeData, error) {
-    var data DBCodeData
-    
-    err := r.db.QueryRow(ctx, GetCodeFromDBQuery, userID).Scan(&data.Code, &data.CreatedAt)
-    if err != nil {
-        if errors.Is(err, pgx.ErrNoRows) {
-            return DBCodeData{}, ErrorRowDoesNotExist
-        }
-        return DBCodeData{}, ErrorQueryFailed
-    }
-    
-    return data, nil
+	var data DBCodeData
+
+	err := r.db.QueryRow(ctx, GetCodeFromDBQuery, userID).Scan(&data.Code, &data.CreatedAt)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return DBCodeData{}, ErrorRowDoesNotExist
+		}
+		return DBCodeData{}, ErrorQueryFailed
+	}
+
+	return data, nil
 }
 
 func validateCodeRepositoryLayer(code string, codeData DBCodeData) (bool, error) {
